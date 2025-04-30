@@ -89,7 +89,7 @@ const ChatRoom = () => {
     const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
 
     if (!apiKey) {
-      console.error("❌ Missing OpenRouter API Key. Set VITE_OPENROUTER_API_KEY in .env or Vercel.");
+      console.error("❌ Missing OpenRouter API Key.");
       setMessages((prev) => [...prev, { sender: "ai", text: "API key missing. Can't respond." }]);
       setIsTyping(false);
       return;
@@ -117,19 +117,17 @@ const ChatRoom = () => {
         animateReply(data.choices[0].message.content);
       } else {
         stopTypingLoop();
-        console.error("No AI response received:", data);
-        setMessages((prev) => [
-          ...prev,
-          { sender: "ai", text: "Hmm... I couldn't think of anything to say. Try again?" }
-        ]);
+        setMessages((prev) => [...prev, {
+          sender: "ai",
+          text: "Hmm... I couldn't think of anything to say. Try again?"
+        }]);
       }
-    } catch (error) {
+    } catch (err) {
       stopTypingLoop();
-      console.error("OpenRouter Claude 3.5 Error:", error);
-      setMessages((prev) => [
-        ...prev,
-        { sender: "ai", text: "Something went wrong... please try again later." }
-      ]);
+      setMessages((prev) => [...prev, {
+        sender: "ai",
+        text: "Something went wrong... please try again later."
+      }]);
     } finally {
       setIsTyping(false);
     }
@@ -153,17 +151,15 @@ const ChatRoom = () => {
 
   return (
     <div
-      className="relative w-full h-screen bg-cover bg-center text-white"
-      style={{
-        backgroundImage: `url(${backgroundMap[characterName]})`
-      }}
+      className="relative w-full h-screen overflow-hidden bg-cover bg-center text-white"
+      style={{ backgroundImage: `url(${backgroundMap[characterName]})` }}
     >
       <div className="absolute inset-0 bg-black/60 z-0" />
 
-      <div className="relative z-10 flex flex-col items-center h-full p-4">
-        <h1 className="text-3xl font-bold neonText mb-4">{characterName}</h1>
+      <div className="relative z-10 flex flex-col items-center h-full px-4 py-6">
+        <h1 className="text-3xl font-bold neonText mb-3">{characterName}</h1>
 
-        <div className="w-full max-w-2xl flex-1 bg-gray-900/80 rounded-lg p-4 overflow-y-auto">
+        <div className="w-full max-w-2xl flex-1 bg-gray-900/80 rounded-lg p-4 overflow-y-auto max-h-[calc(100%-220px)]">
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -190,9 +186,7 @@ const ChatRoom = () => {
           )}
 
           {isTyping && (
-            <div className="mb-2 text-blue-400 italic">
-              {characterName} is typing...
-            </div>
+            <div className="mb-2 text-blue-400 italic">{characterName} is typing...</div>
           )}
 
           <div ref={bottomRef} />
@@ -216,10 +210,11 @@ const ChatRoom = () => {
         </div>
       </div>
 
+      {/* Character overlay: mobile-safe */}
       <img
         src={characterOverlays[characterName]}
         alt={`${characterName} sprite`}
-        className="absolute bottom-0 right-0 max-h-[90%] object-contain pointer-events-none select-none z-10"
+        className="absolute bottom-0 right-0 h-auto max-h-[70%] w-auto object-contain pointer-events-none select-none z-0 md:max-h-[90%]"
       />
     </div>
   );
