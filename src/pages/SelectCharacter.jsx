@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-// Image imports
+// Images
 import lunaImg from "../assets/characters/luna.png";
 import nyxImg from "../assets/characters/nyx.png";
 import orionImg from "../assets/characters/orion.png";
-import bgImage from "../assets/backgrounds/charselect-bg.jpg"; // ✅ Your new background image
+import bgImage from "../assets/backgrounds/charselect-bg.jpg";
 
 const characters = [
   {
@@ -46,14 +46,14 @@ const SelectCharacter = () => {
         backgroundPosition: "center",
       }}
     >
-      <h1 className="text-4xl font-bold neonText mb-10 z-10">Select Your Character</h1>
+      <h1 className="text-4xl font-bold neonText mb-6 z-10">Select Your Character</h1>
 
-      <div className="flex flex-wrap justify-center gap-8 max-w-5xl z-10">
+      {/* Carousel container */}
+      <div className="flex w-full overflow-x-auto snap-x snap-mandatory z-10 px-4 gap-4 pb-6 scrollbar-hide">
         {characters.map((char, index) => (
           <div
             key={char.name}
-            className={`relative w-64 h-[400px] bg-[#111827] border-2 border-pink-500 rounded-xl p-4 shadow-lg transition-all duration-300 transform hover:scale-105 overflow-hidden group
-            ${mounted ? `opacity-0 translate-y-5 animate-fade-in-up delay-${index * 100}` : ""}`}
+            className={`flex-shrink-0 snap-center w-64 h-[420px] bg-[#111827] border-2 border-pink-500 rounded-xl p-4 shadow-lg transition-all duration-300 transform hover:scale-105 overflow-hidden group`}
             onClick={() => handleSelect(char.name)}
           >
             <img
