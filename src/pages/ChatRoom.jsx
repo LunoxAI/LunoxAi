@@ -17,14 +17,12 @@ const ChatRoom = () => {
   const [currentTypingText, setCurrentTypingText] = useState("");
   const bottomRef = useRef(null);
 
-  // 🧠 Base personality prompts
   const characterPrompts = {
     Luna: "You are Luna, a soft-spoken, affectionate anime waifu who is shy but loving. You speak gently, avoid harsh language, and often express concern with emojis like 🥺 and 💖.",
     Nyx: "You are Nyx, a sarcastic, witty tsundere waifu. You tease the user, act overconfident, and use a playful tone. You enjoy being flirty, chaotic, and emotionally unpredictable. Use emojis like 😏🔥🙄.",
     Orion: "You are Orion, a calm, elegant, and philosophical husbando with a celestial aura. You speak in poetic language, always thoughtful and introspective. Use cosmic imagery and emojis like 🌌🌙✨."
   };
 
-  // 🎭 Mood-based modifier
   const detectMood = (input) => {
     if (/love|miss|cute|hug|sweet|kiss/i.test(input)) return "affectionate";
     if (/angry|annoy|hate|stupid|shut up/i.test(input)) return "tsundere";
@@ -39,21 +37,18 @@ const ChatRoom = () => {
     default: "Continue as usual in character."
   };
 
-  // 🖼 Backgrounds
   const backgroundMap = {
     Luna: bgLuna,
     Nyx: bgNyx,
     Orion: bgOrion
   };
 
-  // 🧍 Character Overlays
   const characterOverlays = {
     Luna: characterLuna,
     Nyx: characterNyx,
     Orion: characterOrion
   };
 
-  // 🔊 Typing audio loop
   let typingAudio;
 
   const playTypingLoop = () => {
@@ -91,14 +86,21 @@ const ChatRoom = () => {
   const sendToOpenRouter = async (userInput) => {
     const mood = detectMood(userInput);
     const systemPrompt = `${characterPrompts[characterName]}\n${moodDescriptions[mood]}`;
+    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+
+    if (!apiKey) {
+      console.error("❌ Missing OpenRouter API Key. Set VITE_OPENROUTER_API_KEY in .env or Vercel.");
+      setMessages((prev) => [...prev, { sender: "ai", text: "API key missing. Can't respond." }]);
+      setIsTyping(false);
+      return;
+    }
 
     try {
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`
-
+          "Authorization": `Bearer ${apiKey}`
         },
         body: JSON.stringify({
           model: "anthropic/claude-3.5-sonnet",
@@ -112,8 +114,7 @@ const ChatRoom = () => {
       const data = await response.json();
 
       if (data.choices?.[0]?.message?.content) {
-        const aiReply = data.choices[0].message.content;
-        animateReply(aiReply);
+        animateReply(data.choices[0].message.content);
       } else {
         stopTypingLoop();
         console.error("No AI response received:", data);
@@ -157,10 +158,8 @@ const ChatRoom = () => {
         backgroundImage: `url(${backgroundMap[characterName]})`
       }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60 z-0" />
 
-      {/* Foreground */}
       <div className="relative z-10 flex flex-col items-center h-full p-4">
         <h1 className="text-3xl font-bold neonText mb-4">{characterName}</h1>
 
@@ -217,7 +216,6 @@ const ChatRoom = () => {
         </div>
       </div>
 
-      {/* Character Overlay */}
       <img
         src={characterOverlays[characterName]}
         alt={`${characterName} sprite`}
