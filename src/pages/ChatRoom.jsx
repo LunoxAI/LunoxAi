@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import characterLuna from "../assets/characters/luna.png";
 import characterNyx from "../assets/characters/nyx.png";
 import characterOrion from "../assets/characters/orion.png";
-import bgLuna from "../assets/backgrounds/Luna.jpg";
-import bgNyx from "../assets/backgrounds/Nyx.jpg";
-import bgOrion from "../assets/backgrounds/Orion.jpg";
+import bgLuna from "../assets/backgrounds/luna.jpg";
+import bgNyx from "../assets/backgrounds/nyx.jpg";
+import bgOrion from "../assets/backgrounds/orion.jpg";
 
 const ChatRoom = () => {
   const { characterName } = useParams();
